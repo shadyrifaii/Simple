@@ -1,4 +1,4 @@
-<html>
+	<html>
 	<head>
 	    <meta charset="UTF-8">
 	    <title>
@@ -6,76 +6,52 @@
 	    </title>
 	</head>
 	<body>
-		
+		<script  src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script> 
 		<script type="text/javascript" src="SP.js"> </script>
 		<script type="text/javascript" src="SP.Runtime.js"> </script>
 	
 		<script> 
 
-$(function () {
+			$(function () {
+			    ExecuteOrDelayUntilScriptLoaded(retrieveListItems, "sp.js");
+			});
 
-    ExecuteOrDelayUntilScriptLoaded(retrieveListItems, "sp.js");
+			function retrieveListItems() {
+			    var clientContext = new SP.ClientContext('https://softforce.sharepoint.com');
+			    var oList = clientContext.get_web().get_lists().getByTitle('Test');
+			    var camlQuery = new SP.CamlQuery();
+			    this.collListItem = oList.getItems(camlQuery);
 
-});
+			    clientContext.load(collListItem);
 
-function retrieveListItems() {
+			    clientContext.executeQueryAsync(
+			    Function.createDelegate(this, this.onQuerySucceeded),
+			    Function.createDelegate(this, this.onQueryFailed)
+			    );
+			}
 
-    var clientContext = new SP.ClientContext();
+			function onQuerySucceeded(sender, args) {
 
-    var oList = clientContext.get_web().get_lists().getByTitle('Employees');
+			    var listItemInfo = '';
+			    var listItemEnumerator = collListItem.getEnumerator();
 
-    var camlQuery = new SP.CamlQuery();
+			    while (listItemEnumerator.moveNext()) {
+				var oListItem = listItemEnumerator.get_current();
+				listItemInfo += '<strong>ID: </strong> ' + oListItem.get_id() +
+				' <strong>Title:</strong> ' + oListItem.get_item('Title') +
+				'<br />';
+			    }
+				$("#divListItems").html(listItemInfo);
+			}
 
-    this.collListItem = oList.getItems(camlQuery);
-
-    clientContext.load(collListItem);
-
-    clientContext.executeQueryAsync(
-
-    Function.createDelegate(this, this.onQuerySucceeded),
-
-    Function.createDelegate(this, this.onQueryFailed)
-
-    );
-
-}
-
-function onQuerySucceeded(sender, args) {
-
-    var listItemInfo = '';
-
-    var listItemEnumerator = collListItem.getEnumerator();
-
-    while (listItemEnumerator.moveNext()) {
-
-        var oListItem = listItemEnumerator.get_current();
-
-        listItemInfo += '<strong>ID: </strong> ' + oListItem.get_id() +
-
-        ' <strong>Title:</strong> ' + oListItem.get_item('Title') +
-
-        ' <strong>FirstName:</strong> ' + oListItem.get_item('FirstName') +
-
-        ' <strong>LastName:</strong> ' + oListItem.get_item('LastName') +
-
-        '<br />';
-
-    }
-
-    $("#divListItems").html(listItemInfo);
-
-}
-
-function onQueryFailed(sender, args) {
-
-    alert('Request failed. ' + args.get_message() +
-
-    '\n' + args.get_stackTrace());
-
-} 
-</script>
+			function onQueryFailed(sender, args) {
+			    alert('Request failed. ' + args.get_message() +
+			    '\n' + args.get_stackTrace());
+			} 
+		</script>
 
 		<h1>Simple site</h1>
 		<p>This is the first simple one-page website</p>
+		<div id="divListItems"></div>
 	</body>
 </html>
