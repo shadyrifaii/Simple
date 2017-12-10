@@ -14,8 +14,8 @@
 	
 		<script> 
 
-			$(function () {
-			    SP.SOD.ExecuteOrDelayUntilScriptLoaded(retrieveListItems(), "SP.js");
+			$(document).ready(function(){
+			    ExecuteOrDelayUntilScriptLoaded(retrieveListItems(), "https://softforce.sharepoint.com/_layouts/15/sp.js");
 			});
 
 			function retrieveListItems() {
