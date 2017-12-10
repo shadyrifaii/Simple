@@ -15,10 +15,41 @@
 		<script> 
 
 			$(document).ready(function(){
-			    ExecuteOrDelayUntilScriptLoaded(retrieveListItems(), "https://softforce.sharepoint.com/_layouts/15/sp.js");
+			    /*ExecuteOrDelayUntilScriptLoaded(retrieveListItems(), "https://softforce.sharepoint.com/_layouts/15/sp.js");*/
+				var func = Read();
 			});
 
-			function retrieveListItems() {
+			function Read() {
+				var listName = "Test";
+				var url = "https://softforce.sharepoint.com";
+
+				getListItems(listName, url, function (data) {
+					var items = data.d.results;
+
+					// Add all the new items
+					for (var i = 0; i < items.length; i++) {
+						alert(items[i].Title + ":" + items[i].Id);
+					}
+				}, function (data) {
+					alert("Ooops, an error occured. Please try again");
+				});
+			}
+
+			function getListItems(listName, siteurl, success, failure) {
+				$.ajax({
+					url: "https://softforce.sharepoint.com/_api/web/lists/getbytitle('test')/items",
+					method: "GET",
+					headers: { "Accept": "application/json; odata=verbose" },
+					success: function (data) {
+						success(data);
+					},
+					error: function (data) {
+						failure(data);
+					}
+				   });
+				}
+
+			/*function retrieveListItems() {
 			    var clientContext = new SP.ClientContext('https://softforce.sharepoint.com');
 			    var oList = clientContext.get_web().get_lists().getByTitle('Test');
 			    var camlQuery = new SP.CamlQuery();
@@ -49,7 +80,7 @@
 			function onQueryFailed(sender, args) {
 			    alert('Request failed. ' + args.get_message() +
 			    '\n' + args.get_stackTrace());
-			} 
+			} */
 		</script>
 
 		<h1>Simple site</h1>
