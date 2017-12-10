@@ -15,7 +15,7 @@
 		<script> 
 
 			$(function () {
-			    var func = retrieveListItems();
+			    retrieveListItems();
 			});
 
 			function retrieveListItems() {
@@ -49,7 +49,7 @@
 			function onQueryFailed(sender, args) {
 			    alert('Request failed. ' + args.get_message() +
 			    '\n' + args.get_stackTrace());
-			} 
+			}
 		</script>
 
 		<h1>Simple site</h1>
